@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viora — AI Safety Glasses for Blind and Low-Vision Pedestrians | SAFIENCE</title>
+<meta name="description" content="Viora doesn't replace the white cane — it protects the vertical space the cane cannot reach. On-device hazard and fall detection that works without a smartphone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C1417;
+    --ink-2:#16252A;
+    --paper:#F1F3F2;
+    --paper-2:#E4E8E7;
+    --text:#12191C;
+    --text-mute:#4C5A5F;
+    --mint:#1F7F68;
+    --mint-lift:#7FD9BC;
+    --signal:#C2621C;
+    --rule:rgba(18,25,28,.16);
+    --rule-dark:rgba(241,243,242,.18);
+    --display:"Bricolage Grotesque",Georgia,serif;
+    --body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --pad:clamp(1.25rem,4vw,3rem);
+    --rail:4.5rem;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+  body{
+    margin:0;background:var(--paper);color:var(--text);
+    font-family:var(--body);font-size:1.0625rem;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:0}
+  p{margin:0 0 1rem}
+  a{color:inherit}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+    outline:3px solid var(--signal);outline-offset:3px;border-radius:2px;
+  }
+  .skip{position:absolute;left:-9999px;top:0;z-index:99;background:var(--ink);color:#fff;padding:.75rem 1rem;font-weight:600}
+  .skip:focus{left:.5rem;top:.5rem}
+  .wrap{max-width:74rem;margin:0 auto;padding-inline:var(--pad)}
+  .eyebrow{
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--mint);margin:0 0 .9rem;display:block;
+  }
+  .dark .eyebrow{color:var(--mint-lift)}
+
+  /* ---------- height rail: the signature device ---------- */
+  /* Encodes the product's core idea: the cane covers the ground band; Viora covers everything above. */
+  .rail{position:fixed;left:0;top:0;bottom:0;width:var(--rail);z-index:5;pointer-events:none;display:none}
+  @media (min-width:1180px){.rail{display:block}}
+  .rail .line{position:absolute;left:2.25rem;top:0;bottom:0;width:1px;background:var(--rule)}
+  .rail .zone{position:absolute;left:1.55rem;width:1.4rem;border-top:1px solid var(--rule)}
+  .rail .zone span{
+    position:absolute;left:-.35rem;top:.4rem;transform:rotate(180deg);writing-mode:vertical-rl;
+    font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mute);
+    white-space:nowrap;
+  }
+  .rail .zone.head{top:12%}
+  .rail .zone.waist{top:46%}
+  .rail .zone.ground{top:82%;border-top:2px solid var(--signal)}
+  .rail .zone.ground span{color:var(--signal)}
+  .rail .cover{position:absolute;left:2.25rem;width:5px;background:linear-gradient(180deg,var(--mint) 0%,rgba(31,127,104,.25) 100%);top:12%;bottom:18%}
+
+  /* ---------- top nav ---------- */
+  .topbar{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1rem;
+    padding-bottom:clamp(2.5rem,6vw,4rem)}
+  .brand{font-family:var(--display);font-weight:800;font-size:1.3rem;letter-spacing:-.01em;color:var(--paper);
+    text-decoration:none}
+  .brand small{display:block;font-family:var(--mono);font-size:.62rem;font-weight:400;letter-spacing:.22em;
+    text-transform:uppercase;color:rgba(241,243,242,.55);margin-top:.15rem}
+  .topbar nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:1.1rem;padding:0;margin:0}
+  .topbar nav a{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+    color:rgba(241,243,242,.72);text-decoration:none;padding-bottom:.15rem;border-bottom:1px solid transparent}
+  .topbar nav a:hover{color:var(--mint-lift);border-bottom-color:var(--mint-lift)}
+
+  /* ---------- hero ---------- */
+  .hero{background:var(--ink);color:var(--paper);padding:clamp(1.75rem,4vw,2.5rem) 0 0;position:relative;overflow:hidden}
+  .hero h1{font-size:clamp(2.6rem,7vw,5.1rem);max-width:19ch}
+  .hero h1 .ground{
+    display:block;color:rgba(241,243,242,.55);font-weight:400;font-size:.62em;letter-spacing:-.01em;
+    padding-bottom:.35rem;border-bottom:2px solid var(--signal);width:fit-content;margin-bottom:.7rem;
+  }
+  .hero h1 .above{display:block;color:var(--paper)}
+  .hero .sub{max-width:54ch;margin-top:1.6rem;color:rgba(241,243,242,.82);font-size:1.075rem}
+  .badges{list-style:none;display:flex;flex-wrap:wrap;gap:.45rem;padding:0;margin:2rem 0 0}
+  .badges li{
+    font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;
+    border:1px solid var(--rule-dark);border-radius:999px;padding:.42rem .85rem;color:rgba(241,243,242,.9);
+  }
+  .badges li b{color:var(--mint-lift);font-weight:500}
+  .cta-row{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2.2rem}
+  .btn{
+    display:inline-block;font-weight:600;font-size:.95rem;text-decoration:none;
+    padding:.8rem 1.4rem;border-radius:2px;border:1px solid transparent;
+  }
+  .btn-primary{background:var(--mint-lift);color:var(--ink)}
+  .btn-primary:hover{background:#a5e8d3}
+  .btn-ghost{border-color:var(--rule-dark);color:var(--paper)}
+  .btn-ghost:hover{border-color:var(--mint-lift)}
+  .hero figure{margin:clamp(2.5rem,6vw,4rem) 0 0}
+  .hero img{display:block;width:100%;height:auto}
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(3.25rem,7vw,5.5rem) 0}
+  section.dark{background:var(--ink-2);color:var(--paper)}
+  section.dark p{color:rgba(241,243,242,.82)}
+  h2{font-size:clamp(1.85rem,4vw,3rem);max-width:20ch;margin-bottom:1.4rem}
+  .lede{font-size:1.15rem;max-width:60ch}
+  .cols{display:grid;gap:clamp(1.5rem,4vw,3rem);grid-template-columns:1fr}
+  @media (min-width:850px){.cols.two{grid-template-columns:1fr 1fr}.cols.side{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:start}}
+  figure{margin:0}
+  figure img{display:block;width:100%;height:auto;}
+  .dark figure img{border-color:var(--rule-dark)}
+  figcaption{font-size:.85rem;color:var(--text-mute);margin-top:.6rem;font-family:var(--mono);letter-spacing:.02em}
+  .dark figcaption{color:rgba(241,243,242,.6)}
+  .footnote{font-size:.82rem;color:var(--text-mute);margin-top:1.5rem}
+  .dark .footnote{color:rgba(241,243,242,.6)}
+
+  /* moments */
+  .moments{list-style:none;padding:0;margin:2.5rem 0 0;display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+  @media (min-width:760px){.moments{grid-template-columns:1fr 1fr}}
+  .moments > li{background:var(--paper);padding:1.6rem 1.5rem}
+  .moments h3{font-size:1.2rem;margin-bottom:.55rem;font-weight:600}
+  .moments p{font-size:.98rem;margin-bottom:.9rem}
+  .cue{list-style:none;display:flex;gap:.4rem;flex-wrap:wrap;padding:0;margin:0}
+  .cue li{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+    padding:.28rem .6rem;border:1px solid var(--rule);color:var(--text-mute);
+  }
+  .cue li.alarm{border-color:var(--signal);color:var(--signal)}
+
+  /* interval motif — distance-linked alerts */
+  .interval{margin:2rem 0 .5rem;border:1px solid var(--rule-dark);padding:1.4rem 1.25rem}
+  .ticks{display:flex;align-items:flex-end;gap:0;height:52px}
+  .ticks i{display:block;width:2px;background:var(--mint-lift);height:100%;opacity:.85}
+  .ticks span{display:block;flex:0 0 auto}
+  .interval .labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.68rem;
+    letter-spacing:.08em;text-transform:uppercase;color:rgba(241,243,242,.6);margin-top:.7rem}
+
+  /* tables */
+  .tablewrap{overflow-x:auto;margin-top:1.75rem}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  caption{text-align:left;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--text-mute);padding-bottom:.75rem}
+  .dark caption{color:rgba(241,243,242,.6)}
+  th,td{text-align:left;padding:.8rem .9rem;border-bottom:1px solid var(--rule);vertical-align:top}
+  .dark th,.dark td{border-bottom-color:var(--rule-dark)}
+  thead th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mute);font-weight:500}
+  .dark thead th{color:rgba(241,243,242,.65)}
+  tbody th{font-weight:600;width:34%}
+  td .val{font-family:var(--mono);font-weight:500}
+  .dark td .val{color:var(--mint-lift)}
+
+  .pull{
+    font-family:var(--display);font-size:clamp(1.35rem,3vw,2rem);line-height:1.25;font-weight:600;
+    border-left:3px solid var(--signal);padding-left:1.1rem;margin:2.25rem 0;max-width:30ch;
+  }
+  .twoline{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:1.75rem}
+  @media (min-width:700px){.twoline{grid-template-columns:1fr 1fr}}
+  .twoline div{background:var(--paper);padding:1.4rem 1.35rem}
+  .twoline h3{font-size:1.05rem;font-weight:600;margin-bottom:.45rem}
+  .twoline p{font-size:.95rem;margin:0;color:var(--text-mute)}
+  ul.trust{list-style:none;padding:0;margin:1.5rem 0 0}
+  ul.trust li{padding:.7rem 0 .7rem 1.5rem;border-bottom:1px solid var(--rule);position:relative;font-size:.98rem}
+  ul.trust li::before{content:"";position:absolute;left:0;top:1.28rem;width:.55rem;height:1px;background:var(--mint)}
+
+  /* form */
+  form{margin-top:2rem;max-width:38rem}
+  .field{margin-bottom:1.1rem}
+  label{display:block;font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--text-mute);margin-bottom:.4rem}
+  input,select,textarea{
+    width:100%;font-family:var(--body);font-size:1rem;padding:.7rem .8rem;
+    border:1px solid var(--rule);background:#fff;color:var(--text);border-radius:2px;
+  }
+  textarea{min-height:7rem;resize:vertical}
+  button[type=submit]{background:var(--ink);color:var(--paper);border:none;padding:.85rem 1.6rem;
+    font-family:var(--body);font-weight:600;font-size:.95rem;border-radius:2px;cursor:pointer}
+  button[type=submit]:hover{background:var(--mint)}
+
+  footer{background:var(--ink);color:rgba(241,243,242,.75);padding:3rem 0;font-size:.9rem}
+  footer h2{font-size:1.5rem;color:var(--paper);margin-bottom:1rem}
+  footer .mission{font-family:var(--display);font-size:1.25rem;color:var(--mint-lift);max-width:28ch;line-height:1.3}
+  footer .meta{margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule-dark);font-family:var(--mono);font-size:.75rem;letter-spacing:.05em}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<div class="rail" aria-hidden="true">
+  <span class="line"></span>
+  <span class="cover"></span>
+  <span class="zone head"><span>Head</span></span>
+  <span class="zone waist"><span>Waist</span></span>
+  <span class="zone ground"><span>Cane</span></span>
+</div>
+
+<main id="main">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <a class="brand" href="#main">Viora<small>by SAFIENCE</small></a>
+        <nav aria-label="Sections">
+          <ul>
+            <li><a href="#gap">The gap</a></li>
+            <li><a href="#moments">In use</a></li>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#design">Design</a></li>
+            <li><a href="#evidence">Evidence</a></li>
+            <li><a href="#specs">Specs</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+      <h1>
+        <span class="ground">The white cane reads the ground.</span>
+        <span class="above">Viora watches everything above it.</span>
+      </h1>
+      <p class="sub">AI safety glasses for blind and low-vision pedestrians. Head-height obstacles, approaching hazards, and falls — detected on the device, with no smartphone required.</p>
+      <ul class="badges">
+        <li><b>8 hours</b> continuous detection</li>
+        <li>Works <b>without a phone</b></li>
+        <li>Works <b>without internet</b></li>
+        <li><b>~40 g</b> everyday eyewear</li>
+      </ul>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#how">See how it works</a>
+        <a class="btn btn-ghost" href="#contact">Contact us</a>
+      </div>
+      <figure>
+        <img src="img/fig1-1.png" width="1400" height="933" alt="Viora smart glasses shown beside a person walking with a white cane. A cutaway view of the temple arm reveals the in-house developed circuit board inside.">
+      </figure>
+    </div>
+  </header>
+
+  <!-- GAP -->
+  <section id="gap">
+    <div class="wrap">
+      <span class="eyebrow">The gap</span>
+      <h2>What the cane cannot reach</h2>
+      <div class="cols side">
+        <div>
+          <p class="lede">Worldwide, 43 million people are blind and 295 million live with moderate-to-severe visual impairment.<a href="#fn1"><sup>1</sup></a> For them the white cane is essential — trained over years, trusted every day.</p>
+          <p>But a cane reads the ground. It cannot find a signboard at head height, a branch over the sidewalk, or a bicycle entering the path from the side. And when a fall happens, no one may know.</p>
+          <p>People with vision impairment are about twice as likely to fall as sighted peers. Falls are the second leading cause of unintentional injury death worldwide.<a href="#fn2"><sup>2</sup></a></p>
+          <p class="pull">Viora was built for this gap — not to replace the cane, but to cover what it was never meant to cover.</p>
+        </div>
+        <figure>
+          <img src="img/fig2.gif" width="1400" height="933" alt="Diagram comparing coverage areas. A shaded cone extends from the glasses on a walking person's face, covering the space from the upper body to above the head and forward along the path. A separate grey band near the floor marks the white cane's coverage, from ground level to knee height. A dashed outline highlights the region between knee height and above the head as the area the cane cannot cover." aria-describedby="fig3-desc">
+          <figcaption id="fig3-desc">Conceptual coverage diagram. The cane detects at ground level; Viora covers the vertical band above it, front and to the sides.</figcaption>
+        </figure>
+      </div>
+      <p class="footnote">
+        <span id="fn1">1. Lancet Global Health, 2020.</span>
+        <span id="fn2">2. World Health Organization.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- MOMENTS -->
+  <section id="moments" style="background:var(--paper-2)">
+    <div class="wrap">
+      <span class="eyebrow">In use</span>
+      <h2>Four moments that matter</h2>
+      <p class="lede">Prevention, detection, and response — in one pair of ordinary-looking glasses.</p>
+      <ul class="moments">
+        <li>
+          <h3>Overhead obstacle</h3>
+          <p>A signboard or branch at head height — invisible to a cane, directly in your path. Viora sees it at eye level and warns before contact.</p>
+          <ul class="cue"><li>Beep alert</li></ul>
+        </li>
+        <li>
+          <h3>Sudden obstacle</h3>
+          <p>A bicycle or scooter entering your path from the side. Viora tracks closing objects and alerts as they enter your field of view.</p>
+          <ul class="cue"><li>Beep alert</li></ul>
+        </li>
+        <li>
+          <h3>Step &amp; drop-off</h3>
+          <p>Curbs, stairs, and level changes a camera alone can miss. A multi-zone time-of-flight sensor reads the ground plane and warns before your foot arrives.</p>
+          <ul class="cue"><li>Beep alert</li><li>Voice guidance</li></ul>
+        </li>
+        <li>
+          <h3>Fall response</h3>
+          <p>If Viora detects a fall, it sounds a local alarm and opens a cancellation window. If you don't dismiss it, a designated guardian is notified — with your location.</p>
+          <ul class="cue"><li class="alarm">Siren alert</li><li class="alarm">Guardian alert</li></ul>
+        </li>
+      </ul>
+      <figure style="margin-top:2rem">
+        <img src="img/viora-3.png" width="1400" height="933" alt="Four photographs in sequence. First, a person wearing Viora looks toward a café sign hanging at head height, with a beam indicating detection. Second, the person stands on a tactile paving strip as a bicycle enters from the side. Third, the person approaches a flight of stairs with the beam sweeping the steps. Fourth, the person lies on the ground after a fall while a nearby phone screen displays a fall-detected alert with an emergency contacts button.">
+      </figure>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section id="how" class="dark">
+    <div class="wrap">
+      <span class="eyebrow">How it works</span>
+      <h2>Everything happens on the glasses</h2>
+      <div class="cols two">
+        <div>
+          <p class="lede">Viora's camera, time-of-flight sensor, and motion sensor run through a detection pipeline entirely on the device. No cloud. No mobile data. No pairing required after initial setup.</p>
+          <p><strong>Why that matters:</strong> safety shouldn't depend on a connection. If your phone is out of battery, left at home, or out of range, Viora keeps working.</p>
+        </div>
+        <div>
+          <h3 style="font-size:1.2rem;font-weight:600;margin-bottom:.6rem">Burst-pair sensing</h3>
+          <p>Running a camera continuously on a face-worn device is a thermal and power problem, not only a software one. Viora's sensing engine waits in low-power standby, wakes on motion, captures a short burst, and returns to sleep — analysis continues at low power after the camera is already off.</p>
+          <p>The result: sustained surface temperature of 42.4&nbsp;°C, below our 43&nbsp;°C long-wear comfort target, and a power budget built for a full day of detection.</p>
+        </div>
+      </div>
+
+      <div class="interval">
+        <h3 style="font-size:1.05rem;font-weight:600;margin-bottom:.4rem">Alerts that respect your hearing</h3>
+        <p style="max-width:62ch">For blind pedestrians, ambient sound is a primary information channel — and alert fatigue is a documented reason assistive devices get abandoned. Viora doesn't narrate continuously. It conveys distance through tone spacing that tightens as a hazard closes, with left and right stereo cues for direction. In spaces you already know well, you can silence alerts entirely.</p>
+        <div class="ticks" role="img" aria-label="Diagram of alert tone spacing: widely spaced tones at a distance of eight metres, growing progressively closer together as the hazard approaches one metre.">
+          <span style="flex:0 0 9%"></span><i></i><span style="flex:0 0 9%"></span><i></i><span style="flex:0 0 8%"></span><i></i>
+          <span style="flex:0 0 7%"></span><i></i><span style="flex:0 0 6%"></span><i></i><span style="flex:0 0 5%"></span><i></i>
+          <span style="flex:0 0 4%"></span><i></i><span style="flex:0 0 3.5%"></span><i></i><span style="flex:0 0 3%"></span><i></i>
+          <span style="flex:0 0 2.5%"></span><i></i><span style="flex:0 0 2%"></span><i></i><span style="flex:0 0 1.6%"></span><i></i>
+          <span style="flex:0 0 1.3%"></span><i></i><span style="flex:0 0 1.1%"></span><i></i><span style="flex:0 0 1%"></span><i></i>
+        </div>
+        <p class="labels"><span>8 m — hazard detected</span><span>1 m — imminent</span></p>
+      </div>
+      <p class="pull" style="border-color:var(--mint-lift)">A device that earns silence is trusted more than one that never stops talking.</p>
+    </div>
+  </section>
+
+  <!-- DESIGNED -->
+  <section id="design">
+    <div class="wrap">
+      <span class="eyebrow">Design</span>
+      <h2>It looks like glasses, because it should</h2>
+      <div class="cols side">
+        <div>
+          <p class="lede">Assistive devices are abandoned for reasons that have nothing to do with capability: weight, complexity, and the way they mark the person wearing them.</p>
+          <p>Viora has no display, no visor, no visible apparatus. Components are distributed across both temples for balance, targeting roughly 40 grams. Physical buttons and voice commands keep it usable without sight, and wear detection activates protection automatically — nothing to remember, nothing to switch on.</p>
+          <ul class="trust">
+            <li>A visible camera-indicator LED</li>
+            <li>No facial data stored</li>
+            <li>Immediate voice notice if the phone link drops — believing you are protected when you are not is the most dangerous state of all</li>
+            <li>An explicit low-confidence notice when night or glare degrades sensing</li>
+          </ul>
+        </div>
+        <figure>
+          <img src="img/fig4.gif" width="1400" height="933" alt="Product overview sheet showing the blind-user model with tinted lenses and the low-vision model with clear prescription-ready lenses, alongside photographs of each being worn in everyday settings, and a close-up of the camera housing on the temple." aria-describedby="fig2-desc">
+          <figcaption id="fig2-desc">Two lines: tinted lenses for blind users, prescription-ready clear lenses for low vision.</figcaption>
+        </figure>
+      </div>
+      <div class="twoline">
+        <div>
+          <h3>Blind-user model</h3>
+          <p>Tinted lenses reduce glare and help minimize visual fatigue.</p>
+        </div>
+        <div>
+          <h3>Low-vision model</h3>
+          <p>Prescription-ready clear lenses help support remaining vision.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE -->
+  <section id="evidence" style="background:var(--paper-2)">
+    <div class="wrap">
+      <span class="eyebrow">Evidence</span>
+      <h2>What we measured</h2>
+      <p class="lede">Viora's detection stack was validated end-to-end on our first-generation development platform. These are measured results, with their test conditions.</p>
+      <div class="tablewrap">
+        <table>
+          <caption>Measured results — first-generation development platform</caption>
+          <thead>
+            <tr><th scope="col">Metric</th><th scope="col">Result</th><th scope="col">Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">On-device inference</th><td><span class="val">149 ms</span> (p95 177 ms)</td><td>640×360, INT8-quantized detector, 3.2 MB</td></tr>
+            <tr><th scope="row">Detection rate</th><td><span class="val">5.44 fps</span></td><td>2.7× our real-time requirement</td></tr>
+            <tr><th scope="row">Distance estimation error</th><td><span class="val">+1.5%</span> at 5 m</td><td>Pitch-based ground projection; stable where height-based estimates fail</td></tr>
+            <tr><th scope="row">False alerts, static objects</th><td><span class="val">Zero</span></td><td>Reduced from 40% before alert-policy gating</td></tr>
+            <tr><th scope="row">Sustained surface temperature</th><td><span class="val">42.4 °C</span></td><td>Below our 43 °C long-wear comfort target</td></tr>
+            <tr><th scope="row">Runtime model accuracy</th><td><span class="val">Within 4%</span></td><td>Predicts battery life from a usage profile</td></tr>
+            <tr><th scope="row">Test coverage</th><td><span class="val">188 unit tests</span></td><td>All passing on real hardware</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:1.5rem;max-width:62ch">Our fall-detection validation protocol targets the specificity levels reported for eyeglass-mounted IMU systems in peer-reviewed studies.</p>
+      <p style="max-width:62ch"><strong>Production platform.</strong> The measurements above identified a specific barrier to all-day operation: an always-on base load that capped runtime regardless of camera optimization. Our production board addresses it directly — a single vision SoC with an on-device NPU under deep-sleep RTOS scheduling, waking only in sub-second bursts.</p>
+    </div>
+  </section>
+
+  <!-- SPECS -->
+  <section id="specs">
+    <div class="wrap">
+      <span class="eyebrow">Specifications</span>
+      <h2>Production design</h2>
+      <div class="tablewrap">
+        <table>
+          <caption>Viora — production specifications</caption>
+          <tbody>
+            <tr><th scope="row">Product type</th><td>Blind-user model / Low-vision model</td></tr>
+            <tr><th scope="row">Sensing</th><td>Wide-angle camera, multi-zone time-of-flight (35° downward, 4 m range), 6-axis IMU, wear detection</td></tr>
+            <tr><th scope="row">Processing</th><td>Single vision SoC with on-device NPU (0.4 TOPS, INT8), RTOS, custom board developed in-house</td></tr>
+            <tr><th scope="row">Operation</th><td>Standalone after initial setup — smartphone and internet not required for detection and alerts</td></tr>
+            <tr><th scope="row">Battery</th><td>8 hours in hazard-detection mode / 12+ hours in mixed daily use · dual cells, USB-C charging</td></tr>
+            <tr><th scope="row">Audio</th><td>Stereo speakers, MEMS microphones, distance-linked beeps and voice guidance</td></tr>
+            <tr><th scope="row">Companion app</th><td>iOS and Android — guardian alerts, settings</td></tr>
+            <tr><th scope="row">Weight</th><td>Targeting approximately 40 g</td></tr>
+            <tr><th scope="row">Lens options</th><td>Tinted / prescription-ready clear</td></tr>
+            <tr><th scope="row">Privacy</th><td>On-device processing; no facial data stored</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footnote">Specifications reflect the finalized production design; values are being confirmed through engineering validation ahead of launch.</p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="dark">
+    <div class="wrap">
+      <span class="eyebrow">Availability</span>
+      <h2>Talk to us</h2>
+      <p class="lede">Viora is in engineering validation ahead of launch. We're speaking with distribution partners, assistive-technology programs, rehabilitation organizations, and low-vision clinics — and with blind and low-vision users who want to test early.</p>
+      <form action="#" method="post">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="org">Organization <span class="sr-only">(optional)</span></label>
+          <input id="org" name="organization" type="text" autocomplete="organization">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="role">I am a</label>
+          <select id="role" name="role">
+            <option>User or family member</option>
+            <option>Distributor</option>
+            <option>Institution or program</option>
+            <option>Press</option>
+            <option>Investor</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="msg">Message</label>
+          <textarea id="msg" name="message"></textarea>
+        </div>
+        <button type="submit">Send message</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <h2>SAFIENCE</h2>
+    <p style="max-width:52ch">SAFIENCE builds safety technology for people whose environment wasn't designed with them in mind. Viora is our first product.</p>
+    <p class="mission">Vision loss should never decide who can walk safely.</p>
+    <p class="meta">© 2026 SAFIENCE · Viora is an assistive device and does not replace a white cane or other mobility aids.</p>
+  </div>
+</footer>
+</body>
+</html>

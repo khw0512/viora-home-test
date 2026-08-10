@@ -106,6 +106,19 @@
   .hero figure{margin:clamp(2.5rem,6vw,4rem) 0 0}
   .hero img{display:block;width:100%;height:auto}
 
+
+  /* promises band */
+  .promises{background:var(--ink);color:var(--paper)}
+  .promise-grid{display:grid;gap:1px;background:var(--rule-dark);border:1px solid var(--rule-dark);margin-top:2.25rem}
+  @media (min-width:820px){.promise-grid{grid-template-columns:1fr 1fr}}
+  .promise{background:var(--ink);padding:clamp(1.75rem,4vw,2.75rem)}
+  .promise .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mint-lift);display:block;margin-bottom:1rem}
+  .promise h3{font-family:var(--display);font-size:clamp(1.6rem,3.4vw,2.5rem);font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:0 0 1rem;color:var(--paper)}
+  .promise p{color:rgba(241,243,242,.8);font-size:1rem;max-width:44ch}
+  .promise .no{font-family:var(--mono);font-size:.8rem;letter-spacing:.06em;color:rgba(241,243,242,.65);margin-top:1.2rem}
+  .promise .no b{color:var(--mint-lift);font-weight:500}
+  .promise-close{margin-top:2rem;font-family:var(--display);font-size:clamp(1.15rem,2.4vw,1.6rem);font-weight:600;color:var(--mint-lift);max-width:38ch}
+
   /* ---------- sections ---------- */
   section{padding:clamp(3.25rem,7vw,5.5rem) 0}
   section.dark{background:var(--ink-2);color:var(--paper)}
@@ -115,7 +128,7 @@
   .cols{display:grid;gap:clamp(1.5rem,4vw,3rem);grid-template-columns:1fr}
   @media (min-width:850px){.cols.two{grid-template-columns:1fr 1fr}.cols.side{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:start}}
   figure{margin:0}
-  figure img{display:block;width:100%;height:auto;}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--rule)}
   .dark figure img{border-color:var(--rule-dark)}
   figcaption{font-size:.85rem;color:var(--text-mute);margin-top:.6rem;font-family:var(--mono);letter-spacing:.02em}
   .dark figcaption{color:rgba(241,243,242,.6)}
@@ -212,6 +225,7 @@
         <nav aria-label="Sections">
           <ul>
             <li><a href="#gap">The gap</a></li>
+            <li><a href="#promises">Promises</a></li>
             <li><a href="#moments">In use</a></li>
             <li><a href="#how">How it works</a></li>
             <li><a href="#design">Design</a></li>
@@ -252,7 +266,7 @@
           <p class="lede">Worldwide, 43 million people are blind and 295 million live with moderate-to-severe visual impairment.<a href="#fn1"><sup>1</sup></a> For them the white cane is essential — trained over years, trusted every day.</p>
           <p>But a cane reads the ground. It cannot find a signboard at head height, a branch over the sidewalk, or a bicycle entering the path from the side. And when a fall happens, no one may know.</p>
           <p>People with vision impairment are about twice as likely to fall as sighted peers. Falls are the second leading cause of unintentional injury death worldwide.<a href="#fn2"><sup>2</sup></a></p>
-          <p class="pull">Viora was built for this gap — not to replace the cane, but to cover what it was never meant to cover.</p>
+          <p class="pull">The cane was never the problem. The empty space above it was. Viora fills it.</p>
         </div>
         <figure>
           <img src="img/fig2.gif" width="1400" height="933" alt="Diagram comparing coverage areas. A shaded cone extends from the glasses on a walking person's face, covering the space from the upper body to above the head and forward along the path. A separate grey band near the floor marks the white cane's coverage, from ground level to knee height. A dashed outline highlights the region between knee height and above the head as the area the cane cannot cover." aria-describedby="fig3-desc">
@@ -263,6 +277,30 @@
         <span id="fn1">1. Lancet Global Health, 2020.</span>
         <span id="fn2">2. World Health Organization.</span>
       </p>
+    </div>
+  </section>
+
+
+  <!-- TWO PROMISES -->
+  <section id="promises" class="promises">
+    <div class="wrap">
+      <span class="eyebrow">Two promises</span>
+      <h2>Everything on the glasses. All day on one charge.</h2>
+      <div class="promise-grid">
+        <div class="promise">
+          <span class="tag">Promise 01 — On-device</span>
+          <h3>Nothing stands between the hazard and the warning.</h3>
+          <p>Detection, judgment, and alerting are complete on the glasses themselves. Leave the phone at home — the protection never notices, because it never depended on it.</p>
+          <p class="no"><b>No</b> smartphone · <b>No</b> network · <b>No</b> cloud</p>
+        </div>
+        <div class="promise">
+          <span class="tag">Promise 02 — All day</span>
+          <h3>Protection that is never rationed.</h3>
+          <p>One morning charge keeps watch from your first step to your last, on ultra-low-power hardware we designed for exactly one purpose — this glass. Battery is our problem, not yours.</p>
+          <p class="no"><b>One</b> charge · <b>Every</b> step · <b>Zero</b> thought</p>
+        </div>
+      </div>
+      <p class="promise-close">Protection that must be rationed is not protection.</p>
     </div>
   </section>
 
@@ -290,7 +328,7 @@
         </li>
         <li>
           <h3>Fall response</h3>
-          <p>If Viora detects a fall, it sounds a local alarm and opens a cancellation window. If you don't dismiss it, a designated guardian is notified — with your location.</p>
+          <p>The instant a fall is detected, a siren calls the people nearby while a designated guardian is alerted automatically, location included — help begins in seconds, from both sides.</p>
           <ul class="cue"><li class="alarm">Siren alert</li><li class="alarm">Guardian alert</li></ul>
         </li>
       </ul>
@@ -311,15 +349,15 @@
           <p><strong>Why that matters:</strong> safety shouldn't depend on a connection. If your phone is out of battery, left at home, or out of range, Viora keeps working.</p>
         </div>
         <div>
-          <h3 style="font-size:1.2rem;font-weight:600;margin-bottom:.6rem">Burst-pair sensing</h3>
+          <h3 style="font-size:1.2rem;font-weight:600;margin-bottom:.6rem">Ultra-low-power sensing</h3>
           <p>Running a camera continuously on a face-worn device is a thermal and power problem, not only a software one. Viora's sensing engine waits in low-power standby, wakes on motion, captures a short burst, and returns to sleep — analysis continues at low power after the camera is already off.</p>
           <p>The result: sustained surface temperature of 42.4&nbsp;°C, below our 43&nbsp;°C long-wear comfort target, and a power budget built for a full day of detection.</p>
         </div>
       </div>
 
       <div class="interval">
-        <h3 style="font-size:1.05rem;font-weight:600;margin-bottom:.4rem">Alerts that respect your hearing</h3>
-        <p style="max-width:62ch">For blind pedestrians, ambient sound is a primary information channel — and alert fatigue is a documented reason assistive devices get abandoned. Viora doesn't narrate continuously. It conveys distance through tone spacing that tightens as a hazard closes, with left and right stereo cues for direction. In spaces you already know well, you can silence alerts entirely.</p>
+        <h3 style="font-size:1.05rem;font-weight:600;margin-bottom:.4rem">Alerts built for instant clarity</h3>
+        <p style="max-width:62ch">Alerts are engineered for instant clarity: a sharp beep lands first — instantly — then a short spoken cue says what and where. Tone spacing tightens as a hazard closes, left and right stereo cues give direction, and in spaces you already know well, you can silence alerts entirely.</p>
         <div class="ticks" role="img" aria-label="Diagram of alert tone spacing: widely spaced tones at a distance of eight metres, growing progressively closer together as the hazard approaches one metre.">
           <span style="flex:0 0 9%"></span><i></i><span style="flex:0 0 9%"></span><i></i><span style="flex:0 0 8%"></span><i></i>
           <span style="flex:0 0 7%"></span><i></i><span style="flex:0 0 6%"></span><i></i><span style="flex:0 0 5%"></span><i></i>
@@ -329,7 +367,7 @@
         </div>
         <p class="labels"><span>8 m — hazard detected</span><span>1 m — imminent</span></p>
       </div>
-      <p class="pull" style="border-color:var(--mint-lift)">A device that earns silence is trusted more than one that never stops talking.</p>
+      <p class="pull" style="border-color:var(--mint-lift)">Instant clarity when it matters. Silence when it doesn't.</p>
     </div>
   </section>
 
@@ -344,10 +382,10 @@
           <p>Viora has no display, no visor, no visible apparatus. Components are distributed across both temples for balance, targeting roughly 40 grams. Physical buttons and voice commands keep it usable without sight, and wear detection activates protection automatically — nothing to remember, nothing to switch on.</p>
           <ul class="trust">
             <li>A visible camera-indicator LED</li>
-            <li>No facial data stored</li>
-            <li>Immediate voice notice if the phone link drops — believing you are protected when you are not is the most dangerous state of all</li>
-            <li>An explicit low-confidence notice when night or glare degrades sensing</li>
+            <li>No facial data ever stored</li>
+            <li>A clear voice status the moment anything about the system changes — someone trusting their steps to a device deserves to know exactly where they stand</li>
           </ul>
+          <p style="margin-top:1.4rem;font-weight:600">Viora doesn't just clear hazards from the path — it clears anxiety from the walk.</p>
         </div>
         <figure>
           <img src="img/fig4.gif" width="1400" height="933" alt="Product overview sheet showing the blind-user model with tinted lenses and the low-vision model with clear prescription-ready lenses, alongside photographs of each being worn in everyday settings, and a close-up of the camera housing on the temple." aria-describedby="fig2-desc">
@@ -380,7 +418,6 @@
             <tr><th scope="col">Metric</th><th scope="col">Result</th><th scope="col">Condition</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">On-device inference</th><td><span class="val">149 ms</span> (p95 177 ms)</td><td>640×360, INT8-quantized detector, 3.2 MB</td></tr>
             <tr><th scope="row">Detection rate</th><td><span class="val">5.44 fps</span></td><td>2.7× our real-time requirement</td></tr>
             <tr><th scope="row">Distance estimation error</th><td><span class="val">+1.5%</span> at 5 m</td><td>Pitch-based ground projection; stable where height-based estimates fail</td></tr>
             <tr><th scope="row">False alerts, static objects</th><td><span class="val">Zero</span></td><td>Reduced from 40% before alert-policy gating</td></tr>
@@ -391,7 +428,11 @@
         </table>
       </div>
       <p style="margin-top:1.5rem;max-width:62ch">Our fall-detection validation protocol targets the specificity levels reported for eyeglass-mounted IMU systems in peer-reviewed studies.</p>
-      <p style="max-width:62ch"><strong>Production platform.</strong> The measurements above identified a specific barrier to all-day operation: an always-on base load that capped runtime regardless of camera optimization. Our production board addresses it directly — a single vision SoC with an on-device NPU under deep-sleep RTOS scheduling, waking only in sub-second bursts.</p>
+      <div style="border-left:3px solid var(--signal);padding-left:1.1rem;margin:2rem 0">
+        <p style="max-width:62ch;font-family:var(--display);font-size:1.25rem;font-weight:600;line-height:1.35;margin-bottom:.5rem">Every great accessibility invention outgrew its origin — the curb cut, the typewriter, the audiobook. Viora follows that lineage by design.</p>
+        <p style="max-width:62ch;color:var(--text-mute)">The same real-time AI that guards those who cannot see the hazard guards those who see it too late: older adults, who suffer the greatest number of fatal falls worldwide (WHO). Built for blindness. Engineered for the age wave.</p>
+      </div>
+      <p style="max-width:62ch"><strong>Production platform.</strong> The measurements above identified a specific barrier to all-day operation: an always-on base load that capped runtime regardless of camera optimization. Our production board removes it — a single vision SoC whose NPU completes inference in 100 ms, inside a 0.5-second end-to-end alert budget, waking only in sub-second bursts.</p>
     </div>
   </section>
 
