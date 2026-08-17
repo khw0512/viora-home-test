@@ -844,6 +844,31 @@
         white-space: nowrap;
         border: 0;
       }
+      /* 플로팅 버튼 스타일링 */
+      #scrollTopBtn {
+        display: none; /* 기본 상태: 숨김 */
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 99;
+        width: 48px;
+        height: 48px;
+        border: none;
+        outline: none;
+        background-color: black;
+        color: #ffffff;
+        cursor: pointer;
+        border-radius: 50%;
+        font-size: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.5s linear;
+      }
+
+      /* 호버 효과 */
+      #scrollTopBtn:hover {
+        background-color: black;
+        transform: translateY(-3px);
+      }
     </style>
   </head>
 
